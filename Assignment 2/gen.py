@@ -1,3 +1,4 @@
+# To install dependecies run pip3 install -r requirements.txt
 import pandas as pd
 
 df = pd.read_excel('roaddistance.xlsx')
