@@ -16,5 +16,4 @@ bfs([[State | Path] | Queue], Visited, Goal, Solution) :-
 % top-level predicate: bfs(+Succ, Start, +Goal, -Solution)
 bfs(Start, Goal, Solution) :-
     bfs([[Start]], [Start], Goal, Solution1),
-
     reverse(Solution1, Solution).
