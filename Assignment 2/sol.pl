@@ -1,11 +1,12 @@
 start :-
   write('Enter which search to use: '), nl, nl,
-  write('[1]. Show Depth First Search and Best-first search on this data.'), nl, nl,
-  write('[2]. Show Breadth First Search and A* search on this data.'), nl, nl,
+  write('[1]. Show Depth First Search'), nl, nl,
+  write('[2]. Show Best-first search'), nl, nl,
+  write('[3]. Show Breadth First Search'), nl, nl,
   read(Option), nl, nl,
-  (Option = 1 -> choiceA ; choiceB).
+  (Option = 1 -> choice_depth ; (Option = 2 -> choice_best ; choice_breadth)).
 
-choiceA :-
+choice_depth :-
   write('Enter Source : '), nl, nl,
   read(Src), nl, nl,
   write('Enter Destination : '), nl, nl,
@@ -14,13 +15,20 @@ choiceA :-
   start_dfs(Src, Dest, Path_DFS_R),
   reverse(Path_DFS_R, Path_DFS),
   format('Printing Depth First Search Path...'), nl, nl,
-  print_list(Path_DFS), nl, nl,
+  print_list(Path_DFS), nl, nl.
+
+choice_best :-
+  write('Enter Source : '), nl, nl,
+  read(Src), nl, nl,
+  write('Enter Destination : '), nl, nl,
+  read(Dest), nl, nl,
   format('Starting Best First Search...'), nl, nl,
-  start_best(Src, Dest, Path_Best),
+  start_best(Src, Dest, Path_Best_R),
   format('Printing Best First Search Path...'), nl, nl,
+  reverse(Path_Best_R, Path_Best),
   print_list(Path_Best), nl, nl.
 
-choiceB :-
+choice_breadth :-
   write('Enter Source : '), nl, nl,
   read(Src), nl, nl,
   write('Enter Destination : '), nl, nl,
@@ -28,8 +36,7 @@ choiceB :-
   format('Starting Breadth First Search...'), nl, nl,
   start_bfs(Src, Dest, Path_BFS),
   format('Printing Breadth First Search Path...'), nl, nl,
-  print_list(Path_BFS),
-  format('Starting A* Search...'), nl, nl.
+  print_list(Path_BFS), nl, nl.
 
 start_dfs(Src, Dest, Solution) :-
   dfs([], Src, Solution, Dest).
@@ -42,7 +49,6 @@ dfs(Path, Src, Sol, Dest) :-
 % https://github.com/DrAlbertCruz/CMPS-4560-Informed-Search
 start_best(Src, Dest, Path) :-
   best_first([[Src]], Dest, Path).
-
 best_first([[Dest | Path] | _], Dest, [Dest | Path]).
 best_first([Path | PriorityQueue], Dest, Sol) :-
   genpaths(Path, MorePaths), append(PriorityQueue, MorePaths, PriorityQueue2),
@@ -54,7 +60,7 @@ genpaths([Curr | Path], MorePaths) :-
 
 % Ref: https://ksvi.mff.cuni.cz/~dingle/2019-20/npp/notes_5.html
 start_bfs(Src, Dest, Solution) :-
-  bfs([[Src]], [Src], Dest, Solution),
+  bfs([[Src]], [Src], Dest, Solution1),
   reverse(Solution1, Solution).
 bfs([[Dest | Oth] | _], _, Dest, [Dest | Oth]).
 bfs([[Curr | Path] | Queue], Used, Dest, Solution) :-
@@ -88,7 +94,7 @@ print_list([H | T]) :-
 attach_front(L, X, [X | L]).
 
 % sort list for best first and A*
-sort_list(L, L, Dest).
+sort_list(L, L, _).
 sort_list(L, L2, Dest) :- predicate(L, L1, Dest), !, sort_list(L1, L2, Dest).
 
 % predicate to sort based on heuristic
