@@ -1,19 +1,14 @@
-% helper predicate
-prepend(L, X, [X | L]).
+% Ref: https://ksvi.mff.cuni.cz/~dingle/2019-20/npp/notes_5.html
+attach_front(L, X, [X | L]).
 
-% if goal is at the head of the queue, return it
-bfs([[Goal | Rest] | _], _, Goal, [Goal | Rest]).
+bfs([[Dest | Oth] | _], _, Dest, [Dest | Oth]).
 
-% main recursive predicate: bfs(+Succ, +Queue, +Visited, +Goal, -Solution)
-bfs([[State | Path] | Queue], Visited, Goal, Solution) :-
-    findall(X, s(State, X), Next),    % find all neighboring states
-    subtract(Next, Visited, Next1),            % remove already-visited states
-    maplist(prepend([State | Path]), Next1, Next2), % prepend each state to path
-    append(Queue, Next2, Queue2),              % add all new states to queue
-    append(Next1, Visited, Visited1),          % add all new states to visited set
-    bfs(Queue2, Visited1, Goal, Solution).   % recurse
+bfs([[Curr | Path] | Queue], Used, Dest, Solution) :-
+    findall(X, dist(Curr, X, _), Next), subtract(Next, Used, To),           
+    maplist(attach_front([Curr | Path]), To, Child),
+    append(Queue, Child, NewQueue), append(To, Used, Used1),         
+    bfs(NewQueue, Used1, Dest, Solution). 
 
-% top-level predicate: bfs(+Succ, Start, +Goal, -Solution)
-bfs(Start, Goal, Solution) :-
-    bfs([[Start]], [Start], Goal, Solution1),
+start_bfs(Src, Dest, Solution) :-
+    bfs([[Src]], [Src], Dest, Solution1),
     reverse(Solution1, Solution).
