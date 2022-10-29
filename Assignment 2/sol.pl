@@ -14,7 +14,11 @@ choiceA :-
   start_dfs(Src, Dest, Path_DFS_R),
   reverse(Path_DFS_R, Path_DFS),
   format('Printing Depth First Search Path...'), nl, nl,
-  print_list(Path_DFS).
+  print_list(Path_DFS), nl, nl,
+  format('Starting Best First Search...'), nl, nl,
+  start_best(Src, Dest, Path_Best),
+  format('Printing Best First Search Path...'), nl, nl,
+  print_list(Path_Best), nl, nl.
 
 choiceB :-
   write('Enter Source : '), nl, nl,
@@ -24,7 +28,8 @@ choiceB :-
   format('Starting Breadth First Search...'), nl, nl,
   start_bfs(Src, Dest, Path_BFS),
   format('Printing Breadth First Search Path...'), nl, nl,
-  print_list(Path_BFS).
+  print_list(Path_BFS),
+  format('Starting A* Search...'), nl, nl.
 
 start_dfs(Src, Dest, Solution) :-
   dfs([], Src, Solution, Dest).
@@ -34,18 +39,31 @@ dfs(Path, Src, Sol, Dest) :-
   not(member(To, Path)),
   dfs([Src | Path], To, Sol, Dest).
 
+% https://github.com/DrAlbertCruz/CMPS-4560-Informed-Search
+start_best(Src, Dest, Path) :-
+  best_first([[Src]], Dest, Path).
+
+best_first([[Dest | Path] | _], Dest, [Dest | Path]).
+best_first([Path | PriorityQueue], Dest, Sol) :-
+  genpaths(Path, MorePaths), append(PriorityQueue, MorePaths, PriorityQueue2),
+  sort_list(PriorityQueue2, UpdPriorityQueue, Dest),
+  best_first(UpdPriorityQueue, Dest, Sol).
+
+genpaths([Curr | Path], MorePaths) :-
+  findall([To, Curr | Path], (dist(Curr, To, _), \+ member(To, Path)), MorePaths).
+
 % Ref: https://ksvi.mff.cuni.cz/~dingle/2019-20/npp/notes_5.html
+start_bfs(Src, Dest, Solution) :-
+  bfs([[Src]], [Src], Dest, Solution),
+  reverse(Solution1, Solution).
 bfs([[Dest | Oth] | _], _, Dest, [Dest | Oth]).
 bfs([[Curr | Path] | Queue], Used, Dest, Solution) :-
   findall(X, dist(Curr, X, _), Next), subtract(Next, Used, To),           
   maplist(attach_front([Curr | Path]), To, Child),
   append(Queue, Child, NewQueue), append(To, Used, Used1),         
   bfs(NewQueue, Used1, Dest, Solution). 
-start_bfs(Src, Dest, Solution) :-
-  bfs([[Src]], [Src], Dest, Solution),
-  reverse(Solution1, Solution).
 
-%------- PROLOG HELPER FUNCTIONS -------
+% ------- PROLOG HELPER FUNCTIONS -------
 % sort in ascending order without deleting duplicates
 mysort(List, Result) :- sort(0, @=<, List, Result).
 
@@ -68,3 +86,13 @@ print_list([H | T]) :-
 
 % attach at the front
 attach_front(L, X, [X | L]).
+
+% sort list for best first and A*
+sort_list(L, L, Dest).
+sort_list(L, L2, Dest) :- predicate(L, L1, Dest), !, sort_list(L1, L2, Dest).
+
+% predicate to sort based on heuristic
+predicate([[H1 | H2], [HH1 | HH2] | T], [[HH1 | HH2], [H1 | H2] | T], Dest) :- h(H1, Dest, Dist1), h(HH1, Dest, Dist2), Dist1 > Dist2.
+predicate([H | T], [H | T2], Dest) :- predicate(T, T2, Dest).
+
+% --------- PROLOG KNOWLEDGE BASE ---------
