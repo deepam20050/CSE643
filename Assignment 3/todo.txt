@@ -1,0 +1,24 @@
+Software Engineer
+ML Engineer
+Research
+Entrepreneurship
+Graphic Designer
+UI/UX Designer
+Game Developer
+
+0 :  Data Structures & Algorithms
+1 :  Computer Networks
+2 :  Operating Systems
+3 :  Machine Learning
+4 :  Artificial Intelligence
+5 :  Computer Graphics
+6 :  Human Computer Interaction
+7 :  Introduction to Animation and Graphics
+8 :  Game Design and Development
+9 :  Valuation and Portfolio Management
+10 :  Money and Banking
+
+0. Software Job
+1. Research
+2. Graphic/Designer Job
+3. Startups
