@@ -21,69 +21,89 @@ career_game = [0, 1, 2, 3, 4, 7, 8]
   ruleset('career')
 '''
 
-# {'count', 'cgpa', 'work'}
+'''
+CGPA
+>= 9 -> 0
+>= 8 -> 1
+>= 7 -> 2
+'''
+
+# {'cnt', 'cgpa', 'work'}
 with ruleset('courses'):
-  @when_all((m.count >= 3) & (m.cgpa >= 8) & (m.work == 0))
+  @when_all((m.cnt >= 3) & (m.cgpa >= 8) & (m.work == 0))
   def mlpath(c):
-    c.assert_fact('interest', {'work': 'ml-engineer', 'cgpa': m.cgpa})
-    c.assert_fact({'field': 'ML', 'probability': 90})
+    c.assert_fact('interest', {'work': 'ml-engineer', 'cgpa': 1})
 
-  @when_all((m.count >= 3) & (m.cgpa >= 7) & (m.work == 0))
+  @when_all((m.cnt >= 3) & (m.cgpa >= 7) & (m.work == 0))
   def sdepath(c):
-    c.assert_fact('interest', {'work': 'sde', 'cgpa': m.cgpa})
-    c.assert_fact({'field': 'SDE', 'probability': 80})
+    c.assert_fact('interest', {'work': 'sde', 'cgpa': 2})
 
-  @when_all((m.count >= 5) & (m.cgpa >= 9) & (m.work == 1))
+  @when_all((m.cnt >= 5) & (m.cgpa >= 9) & (m.work == 1))
   def researchpath(c):
-    c.assert_fact('interest', {'work': 'research', 'cgpa': m.cgpa})
+    c.assert_fact('interest', {'work': 'research', 'cgpa': 0})
 
-  @when_all((m.count >= 3) & (m.cgpa >= 9) & (m.work == 2))
+  @when_all((m.cnt >= 3) & (m.cgpa >= 9) & (m.work == 2))
   def uipath(c):
-    c.assert_fact('interest', {'work': 'ui', 'cgpa': m.cgpa})
+    c.assert_fact('interest', {'work': 'ui', 'cgpa': 0})
   
-  @when_all((m.count >= 3) & (m.cgpa < 8) & (m.work == 2))
+  @when_all((m.cnt >= 3) & (m.cgpa >= 8) & (m.work == 2))
   def gamepath(c):
-    c.assert_fact('interest', {'work': 'game', 'cgpa' : m.cgpa})
+    c.assert_fact('interest', {'work': 'game', 'cgpa' : 1})
   
-  @when_all((m.count >= 3) & (m.cgpa < 9) & (m.cgpa > 8) & (m.work == 2))
-  def graphicpath(c):
-    c.assert_fact('interest', {'work': 'graphic', 'cgpa' : m.cgpa})
+  @when_all((m.cnt >= 3) & (m.cgpa >= 7) & (m.work == 2))
+  def graphpath(c):
+    c.assert_fact('interest', {'work': 'ui', 'cgpa': 2})
 
-  @when_all(+m.field)
-  def output(c):
-    print('Fact : {0} {1}'.format(c.m.field, c.m.probability))
+  @when_all((m.cnt >= 3) & (m.cgpa >= 9) & (m.work == 3))
+  def startuppath(c):
+    c.assert_fact('interest', {'work': 'startup', 'cgpa': 0})
+  
+  @when_all((m.cnt >= 3) & (m.cgpa >= 7) & (m.work == 3))
+  def startup_sde(c):
+    c.assert_fact('interest', {'work': 'sde', 'cgpa': 1})
+
+  @when_all(m.cgpa > 0)
+  def generic(c):
+    c.assert_fact('interest', {'work': 'intern', 'cgpa': -1})
+
+'''
+CGPA
+>= 9 -> 0
+>= 8 -> 1
+>= 7 -> 2
+'''
 
 # {'work', 'cgpa'}
 with ruleset('interest'):
-  @when_all((m.work == 'ml-engineer') & (m.cgpa >= 8))
+  @when_all((m.work == 'ml-engineer') & (m.cgpa <= 1))
   def go_ml(c):
     c.assert_fact('career', {'option': 1})
   
-  @when_all((m.work == 'ml-engineer') & (m.cgpa >= 7))
+  @when_all((m.work == 'ml-engineer') & (m.cgpa <= 2))
   def go_sde(c):
     c.assert_fact('career', {'option': 0})
   
-  @when_all((m.work == 'research') & (m.cgpa >= 9))
+  @when_all((m.work == 'research') & (m.cgpa == 0))
   def goresearch(c):
-    c.assert_fact('career', {'option': 3})
+    c.assert_fact('career', {'option': 2})
   
-  @when_all((m.work == 'research') & (m.cgpa >= 7))
+  @when_all((m.work == 'research') & (m.cgpa <= 2))
   def go_research_ml(c):
     c.assert_fact('career', {'option': 1})
 
-  @when_all((m.work == 'startup') & (m.cgpa >= 9))
+  @when_all((m.work == 'startup') & (m.cgpa == 0))
   def go_startup(c):
     c.assert_fact('career', {'option': 3})
   
-  @when_all((m.work == 'startup') & (m.cgpa >= 8))
+  @when_all((m.work == 'startup') & (m.cgpa <= 1))
   def go_startup(c):
     c.assert_fact('career', {'option': 0})
   
-  @when_all((m.work == 'ui') & (m.cgpa >= 8))
+  @when_all((m.work == 'ui') & (m.cgpa <= 1))
   def go_ui(c):
     c.assert_fact('career', {'option': 5})
   
-  @when_all((m.work == 'ui') & (m.cgpa >= 7))
+  @when_all((m.work == 'ui') & (m.cgpa <= 2))
   def go_ui_graphic(c):
     c.assert_fact('career', {'option': 4})
   
@@ -91,7 +111,7 @@ with ruleset('interest'):
   def go_game(c):
     c.assert_fact('career', {'option': 6})
   
-  @when_all((m.cgpa < 7))
+  @when_all((m.cgpa < 0))
   def go_intern(c):
     c.assert_fact('career', {'option': 7})
 
@@ -136,6 +156,9 @@ with ruleset('career'):
 def get_common (listA, listB):
   return len(set(listA) & set(listB))
 
+def start(x, cgpa, interest_idx):
+  assert_fact('courses', {'cnt': x, 'cgpa': cgpa, 'work': interest_idx})
+
 if __name__ == "__main__":
   cgpa = int(input("Enter CGPA: "))
   print("Choose course indices of the courses you've done from the following courses")
@@ -150,3 +173,12 @@ if __name__ == "__main__":
   for i in range(len(Interests)):
     print(i, ": ", Interests[i])
   interest_idx = int(input("Enter interest index: "))
+  if (interest_idx == 0):
+    start(get_common(courses_done, career_sde), cgpa, interest_idx)
+  elif (interest_idx == 1):
+    start(get_common(courses_done, career_research), cgpa, interest_idx)
+  elif (interest_idx == 2):
+    start(get_common(courses_done, career_ui), cgpa, interest_idx)
+    start(get_common(courses_done, career_game), cgpa, interest_idx)
+  elif (interest_idx == 3):
+    start(get_common(courses_done, career_startup), cgpa, interest_idx)
