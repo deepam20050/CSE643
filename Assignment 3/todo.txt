@@ -5,6 +5,7 @@ Entrepreneurship
 Graphic Designer
 UI/UX Designer
 Game Developer
+Internship
 
 0 :  Data Structures & Algorithms
 1 :  Computer Networks
