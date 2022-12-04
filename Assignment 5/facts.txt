@@ -1,0 +1,13 @@
+yes('automata').
+yes('algos').
+no('datascience').
+no('cp').
+no('coding').
+no('oop').
+yes('security').
+no('business').
+res(yes).
+ml(yes).
+sde(no).
+cyber(yes).
+biz(no).
